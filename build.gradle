@@ -1,0 +1,89 @@
+plugins {
+    id 'fabric-loom' version '1.15.3'
+    id 'maven-publish'
+}
+
+version = project.hasProperty('mod_version') ? project.mod_version : '1.0.0'
+group = project.hasProperty('maven_group') ? project.maven_group : 'com.you.hidegrass'
+
+base {
+    archivesName = project.hasProperty('archives_base_name') ? project.archives_base_name : 'hidegrass'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
+    maven { url "https://libraries.minecraft.net/" }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "hidegrass" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "${project.mappings}"
+
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    implementation "com.google.code.gson:gson:2.10.1"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": inputs.properties.version
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    inputs.property "archivesName", project.base.archivesName
+
+    from("LICENSE") {
+        rename { "${it}_${inputs.properties.archivesName}" }
+    }
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+}
