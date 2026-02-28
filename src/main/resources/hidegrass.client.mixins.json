@@ -1,0 +1,1 @@
+{"required":true,"package":"com.you.hidegrass.mixin","client":["BlockOutlineMixin"],"injectors":{"defaultRequire":1}}

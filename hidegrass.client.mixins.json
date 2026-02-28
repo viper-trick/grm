@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.you.hidegrass.mixin",
+  "refmap": "hidegrass.refmap.json",
+  "client": [
+    "BlockRenderManagerMixin",
+    "BlockOutlineMixin",
+    "BlockModelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

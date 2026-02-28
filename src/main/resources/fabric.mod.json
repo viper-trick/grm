@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "hidegrass",
+  "version": "1.0.0",
+  "name": "Hide Grass",
+  "description": "Hides tall grass, short grass and ferns for better visibility.",
+  "authors": ["viper"],
+
+  "environment": "client",
+
+  "icon": "assets/hidegrass/icon.png",
+
+  "custom": {
+    "modmenu:icon": "assets/hidegrass/icon.png"
+  },
+
+  "mixins": [
+    "hidegrass.client.mixins.json"
+  ],
+
+  "entrypoints": {
+    "client": [
+      "com.you.hidegrass.HideGrassMod"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "*",
+    "fabric-api": "*"
+  }
+}
