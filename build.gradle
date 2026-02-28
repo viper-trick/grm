@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.hasProperty('mod_version') ? project.mod_version : '1.0.0'
+version = project.hasProperty('mod_version') ? project.mod_version : '1.0.1'
 group = project.hasProperty('maven_group') ? project.maven_group : 'com.you.hidegrass'
 
 base {

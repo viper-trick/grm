@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "hidegrass",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Hide Grass",
   "description": "Hides tall grass, short grass and ferns for better visibility.",
   "authors": ["viper"],
