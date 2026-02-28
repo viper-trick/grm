@@ -19,9 +19,8 @@
   ],
 
   "entrypoints": {
-    "client": [
-      "com.you.hidegrass.HideGrassMod"
-    ]
+    "client": ["com.you.hidegrass.HideGrassMod"],
+    "modmenu": ["com.you.hidegrass.ModMenuIntegration"]
   },
 
   "depends": {
