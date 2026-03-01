@@ -1,84 +1,54 @@
 package com.you.hidegrass;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigData;
+import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
-public final class HideGrassConfig {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final File CONFIG_FILE = new File("config/hidegrass.json");
+@Config(name = "hidegrass")
+public class HideGrassConfig implements ConfigData {
 
-    public static class Data {
-        public boolean enabled = false;
-        // הוסף כאן שדות נוספים בעתיד, למשל:
-        // public boolean hideTallGrass = true;
-        // public boolean hideShortGrass = true;
+    public boolean enabled = true;
+
+    // Excluded so AutoConfig doesn't try to render Set<String> in its default GUI
+    // (we manage this ourselves via HideGrassConfigScreen)
+    @ConfigEntry.Gui.Excluded
+    public Set<String> hiddenPlants = new HashSet<>();
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    public static HideGrassConfig get() {
+        return AutoConfig.getConfigHolder(HideGrassConfig.class).getConfig();
     }
 
-    private static Data data = new Data();
+    public static void save() {
+        AutoConfig.getConfigHolder(HideGrassConfig.class).save();
+    }
 
-    private HideGrassConfig() {}
+    public static void init() {
+        AutoConfig.register(HideGrassConfig.class, GsonConfigSerializer::new);
+    }
 
-    public static synchronized void load() {
-        if (!CONFIG_FILE.exists()) {
-            save(); // יוצר קובץ עם ברירות מחדל
-            return;
+    // Always access via get() — never via static fields directly
+    public static boolean isEnabled() {
+        return get().enabled;
+    }
+
+    public static boolean shouldHide(String blockId) {
+        HideGrassConfig cfg = get();
+        return cfg.enabled && cfg.hiddenPlants.contains(blockId);
+    }
+
+    public static void setPlantHidden(String blockId, boolean hidden) {
+        HideGrassConfig cfg = get();
+        if (hidden) {
+            cfg.hiddenPlants.add(blockId);
+        } else {
+            cfg.hiddenPlants.remove(blockId);
         }
-        try (FileReader reader = new FileReader(CONFIG_FILE)) {
-            Data loaded = GSON.fromJson(reader, Data.class);
-            if (loaded != null) {
-                data = loaded;
-            } else {
-                data = new Data();
-            }
-        } catch (Exception e) {
-            // שמור לוג אך המשך עם ברירות מחדל
-            System.err.println("[HideGrass] Failed to load config, using defaults: " + e.getMessage());
-            data = new Data();
-            save();
-        }
-    }
-
-    public static synchronized void save() {
-        try {
-            File parent = CONFIG_FILE.getParentFile();
-            if (parent != null && !parent.exists()) parent.mkdirs();
-            try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
-                GSON.toJson(data, writer);
-            }
-        } catch (IOException e) {
-            System.err.println("[HideGrass] Failed to save config: " + e.getMessage());
-        }
-    }
-
-    public static synchronized boolean isEnabled() {
-        return data.enabled;
-    }
-
-    public static synchronized void setEnabled(boolean enabled) {
-        data.enabled = enabled;
-        save();
-    }
-
-    public static synchronized void toggle() {
-        setEnabled(!data.enabled);
-    }
-
-    // גישה ישירה לנתונים למקרים מתקדמים (זהירות בשימוש ישיר)
-    public static synchronized Data getData() {
-        // החזר עותק אם תרצה למנוע שינוי ישיר
-        Data copy = new Data();
-        copy.enabled = data.enabled;
-        return copy;
-    }
-
-    public static synchronized void setData(Data newData) {
-        if (newData == null) return;
-        data = newData;
-        save();
     }
 }

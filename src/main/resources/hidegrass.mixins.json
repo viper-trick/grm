@@ -2,8 +2,7 @@
   "required": true,
   "package": "com.you.hidegrass.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
-  ],
+  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   }
